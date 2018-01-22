@@ -12,6 +12,8 @@ Vagrant.configure(2) do |config|
 
   # Forward ipython notebook's port to the host
   config.vm.network "forwarded_port", guest: 8888, host: 8888
+  
+  config.vm.synced_folder "/media/vingu/vingu_ext/Tools/Dev/lisa/results/wltests/", "/home/vagrant/lisa/results/wltests"
 
   config.vm.provision "shell", inline: <<-SHELL
     set -e
