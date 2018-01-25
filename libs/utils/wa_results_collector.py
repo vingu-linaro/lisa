@@ -142,6 +142,7 @@ class WaResultsCollector(object):
 
         df = pd.DataFrame()
         for wa_dir in wa_dirs:
+            self._log.info(" directory %s",  wa_dir)
             df = df.append(self._read_wa_dir(wa_dir))
 
         kernel_refs = {}
@@ -453,7 +454,13 @@ class WaResultsCollector(object):
                 continue
 
             if artifact_name.startswith('energy_instrument_output'):
-                df = pd.read_csv(path)
+                #self._log.info(" power file %s",  path)
+
+                try:
+                    df = pd.read_csv(path)
+                except pandas.errors.ParserError as e:
+                    self._log.info(" no data for %s",  path)
+                    continue
 
                 if 'device_power' in df.columns:
                     # Looks like this is from an ACME
@@ -492,7 +499,8 @@ class WaResultsCollector(object):
         """
         with open(os.path.join(wa_dir, '__meta', 'target_info.json')) as f:
             target_info = json.load(f)
-        return KernelVersion(target_info['kernel_release']).sha1
+        return target_info['kernel_release']
+        #return KernelVersion(target_info['kernel_release']).sha1
 
     def _select(self, tag='.*', kernel='.*', test='.*'):
         _df = self.results_df
@@ -935,7 +943,7 @@ class WaResultsCollector(object):
                         # Find a p-value which hopefully represents the
                         # (complement of the) certainty that any difference in
                         # the mean represents something real.
-                        pvalue =  ttest_ind(group_results, base_results, equal_var=False).pvalue
+                        tmpstat, pvalue = ttest_ind(group_results, base_results, equal_var=False)
 
                     comparisons.append(Comparison(
                         metric, test, inv_id,
