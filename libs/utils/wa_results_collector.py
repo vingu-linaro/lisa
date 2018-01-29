@@ -280,11 +280,16 @@ class WaResultsCollector(object):
                                    '-'.join([job_id, workload, str(iteration)]))
 
             job_dir_map[job_id] = job_dir
-
+            
             # Jobs can fail due to target misconfiguration or other problems,
             # without preventing us from collecting the results for the jobs
             # that ran OK.
-            with open(os.path.join(job_dir, 'result.json')) as f:
+            my_file = os.path.join(job_dir, 'result.json')
+            if not os.path.isfile(my_file):
+                skipped_jobs[iteration].append(job_id)
+                continue
+
+            with open(my_file) as f:
                 job_result = json.load(f)
                 if job_result['status'] == 'FAILED':
                     skipped_jobs[iteration].append(job_id)
@@ -450,7 +455,7 @@ class WaResultsCollector(object):
         # think we can simplify this.
         for artifact_name, path in artifacts.iteritems():
             if os.stat(path).st_size == 0:
-                self._log.info(" no data for %s",  path)
+                #self._log.info(" no data for %s",  path)
                 continue
 
             if artifact_name.startswith('energy_instrument_output'):
