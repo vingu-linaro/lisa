@@ -159,6 +159,52 @@ for test in collector.tests(workload='idle'):
     results_nrj = results_nrj.append(result)
 
 
+# # Vellamo
+
+# In[ ]:
+
+
+pm_df = df[df.workload == 'vellamo']
+results = pd.DataFrame()
+
+
+# # Html5
+
+# In[ ]:
+
+
+pm_scores = [m for m in pm_df.metric.unique().tolist() if m.startswith('html5')]
+for metric in pm_scores:
+    plot,result = collector.report(workload='vellamo', metric=metric,
+                     sort_on='mean', ascending=False)
+    results = results.append(result)
+
+
+# # metal
+
+# In[ ]:
+
+
+pm_scores = [m for m in pm_df.metric.unique().tolist() if m.startswith('metal')]
+for metric in pm_scores:
+    plot,result = collector.report(workload='vellamo', metric=metric,
+                     sort_on='mean', ascending=False)
+    results = results.append(result)
+
+
+# # multi
+
+# In[ ]:
+
+
+pm_scores = [m for m in pm_df.metric.unique().tolist() if m.startswith('multi')]
+for metric in pm_scores:
+    plot,result = collector.report(workload='vellamo', metric=metric,
+                     sort_on='mean', ascending=False)
+    results = results.append(result)
+results.to_csv("vellamo.csv.csv")
+
+
 # # PCMark Scores
 
 # In[ ]:
